@@ -1,9 +1,15 @@
 import tkinter as tk
+import pygame
 
 class SliderCountdownTimer:
     def __init__(self, master):
         self.master = master
         self.master.title("Countdown Timer")
+
+        # Initialize Pygame mixer for alarm
+        pygame.mixer.init()
+        self.alarm_sound = "overthehorizon.mp3"  # Replace with your sound file
+        pygame.mixer.music.load(self.alarm_sound)
 
         # Label for minutes
         self.label_minutes = tk.Label(master, text="Set Minutes (0-59):")
@@ -54,6 +60,14 @@ class SliderCountdownTimer:
         else:
             self.timer_label.config(text="Time's up!")
             self.is_running = False
+            self.play_alarm()
+
+    def play_alarm(self):
+        pygame.mixer.music.play()  # Play the alarm sound
+        self.master.after(30000, self.stop_alarm)  # Stop the alarm after 5 seconds
+
+    def stop_alarm(self):
+        pygame.mixer.music.stop()  # Stop the alarm sound
 
 if __name__ == "__main__":
     root = tk.Tk()
