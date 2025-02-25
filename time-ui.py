@@ -30,6 +30,15 @@ class SliderCountdownTimer:
         self.start_button = tk.Button(master, text="Start", command=self.start_timer)
         self.start_button.pack()
 
+        self.pause_button = tk.Button(master, text="Pause", command=self.pause_timer)
+        self.pause_button.pack()
+
+        self.resume_button = tk.Button(master, text="Resume", command=self.resume_timer)
+        self.resume_button.pack()
+
+        self.stop_button = tk.Button(master, text="Stop", command=self.stop_timer)
+        self.stop_button.pack()
+
         self.timer_label = tk.Label(master, text="", font=("Helvetica", 48))
         self.timer_label.pack()
 
@@ -61,6 +70,21 @@ class SliderCountdownTimer:
             self.timer_label.config(text="Time's up!")
             self.is_running = False
             self.play_alarm()
+    
+    def pause_timer(self):
+        if self.is_running and not self.is_paused:
+            self.is_paused = True
+    
+    def resume_timer(self):
+        if self.is_running and self.is_paused:
+            self.is_paused = False
+            self.countdown() #Resume Countdown
+    
+    def stop_timer(self):
+        self.is_running = False
+        self.is_paused = False
+        self.remaining_time = 0
+        self.timer_label.config(text="")
 
     def play_alarm(self):
         pygame.mixer.music.play()  # Play the alarm sound
