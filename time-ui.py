@@ -43,6 +43,8 @@ class SliderCountdownTimer:
         self.timer_label.pack()
 
         self.is_running = False
+        self.is_paused = False
+        self.remaining_time = 0
 
     def start_timer(self):
         if self.is_running:
@@ -51,35 +53,37 @@ class SliderCountdownTimer:
         # Get the values from the sliders
         minutes = self.slider_minutes.get()
         seconds = self.slider_seconds.get()
-        total_seconds = minutes * 60 + seconds
+        self.remaining_time = minutes * 60 + seconds
 
-        if total_seconds < 0:
+        if self.remaining_time < 0:
             self.timer_label.config(text="Negative time not allowed.")
             return
 
         self.is_running = True
-        self.countdown(total_seconds)
+        self.is_paused = False
+        self.countdown()
 
-    def countdown(self, total_seconds):
-        if total_seconds >= 0:
-            mins, secs = divmod(total_seconds, 60)
+    def countdown(self):
+        if self.remaining_time >= 0 and not self.is_paused:
+            mins, secs = divmod(self.remaining_time, 60)
             timer = f'{mins:02d}:{secs:02d}'
             self.timer_label.config(text=timer)
-            self.master.after(1000, self.countdown, total_seconds - 1)  # Call countdown every second
-        else:
+            self.remaining_time -= 1
+            self.master.after(1000, self.countdown)  # Call countdown every second
+        elif self.remaining_time < 0:
             self.timer_label.config(text="Time's up!")
             self.is_running = False
             self.play_alarm()
-    
+
     def pause_timer(self):
         if self.is_running and not self.is_paused:
             self.is_paused = True
-    
+
     def resume_timer(self):
         if self.is_running and self.is_paused:
             self.is_paused = False
-            self.countdown() #Resume Countdown
-    
+            self.countdown()  # Resume countdown
+
     def stop_timer(self):
         self.is_running = False
         self.is_paused = False
@@ -88,7 +92,7 @@ class SliderCountdownTimer:
 
     def play_alarm(self):
         pygame.mixer.music.play()  # Play the alarm sound
-        self.master.after(30000, self.stop_alarm)  # Stop the alarm after 5 seconds
+        self.master.after(30000, self.stop_alarm)  # Stop the alarm after 30 seconds
 
     def stop_alarm(self):
         pygame.mixer.music.stop()  # Stop the alarm sound
