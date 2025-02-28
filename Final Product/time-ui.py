@@ -11,6 +11,14 @@ class SliderCountdownTimer:
         self.alarm_sound = "overthehorizon.mp3"  # Replace with your sound file
         pygame.mixer.music.load(self.alarm_sound)
 
+        # Label for hours
+        self.label_hours = tk.Label(master, text="Set Hours (0-23):")
+        self.label_hours.pack()
+
+        # Slider for selecting hours
+        self.slider_hours = tk.Scale(master, from_=0, to=23, orient='horizontal', length=300)
+        self.slider_hours.pack()
+
         # Label for minutes
         self.label_minutes = tk.Label(master, text="Set Minutes (0-59):")
         self.label_minutes.pack()
@@ -51,9 +59,10 @@ class SliderCountdownTimer:
             return  # Prevent starting multiple timers
 
         # Get the values from the sliders
+        hours = self.slider_hours.get()
         minutes = self.slider_minutes.get()
         seconds = self.slider_seconds.get()
-        self.remaining_time = minutes * 60 + seconds
+        self.remaining_time = hours * 3600 + minutes * 60 + seconds  # Convert to total seconds
 
         if self.remaining_time < 0:
             self.timer_label.config(text="Negative time not allowed.")
@@ -66,7 +75,8 @@ class SliderCountdownTimer:
     def countdown(self):
         if self.remaining_time >= 0 and not self.is_paused:
             mins, secs = divmod(self.remaining_time, 60)
-            timer = f'{mins:02d}:{secs:02d}'
+            hours, mins = divmod(mins, 60)
+            timer = f'{hours:02d}:{mins:02d}:{secs:02d}'
             self.timer_label.config(text=timer)
             self.remaining_time -= 1
             self.master.after(1000, self.countdown)  # Call countdown every second
