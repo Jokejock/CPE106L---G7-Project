@@ -4,7 +4,7 @@ import pygame
 class SliderCountdownTimer:
     def __init__(self, master):
         self.master = master
-        self.master.title("Countdown Timer")
+        self.master.title("STEADYPACE")
 
         # Initialize Pygame mixer for alarm
         pygame.mixer.init()
@@ -16,7 +16,7 @@ class SliderCountdownTimer:
         self.label_hours.pack()
 
         # Slider for selecting hours
-        self.slider_hours = tk.Scale(master, from_=0, to=23, orient='horizontal', length=300)
+        self.slider_hours = tk.Scale(master, from_=0, to=23, orient='horizontal', length=300, command=self.update_time_display)
         self.slider_hours.pack()
 
         # Label for minutes
@@ -24,7 +24,7 @@ class SliderCountdownTimer:
         self.label_minutes.pack()
 
         # Slider for selecting minutes
-        self.slider_minutes = tk.Scale(master, from_=0, to=59, orient='horizontal', length=300)
+        self.slider_minutes = tk.Scale(master, from_=0, to=59, orient='horizontal', length=300, command=self.update_time_display)
         self.slider_minutes.pack()
 
         # Label for seconds
@@ -32,20 +32,28 @@ class SliderCountdownTimer:
         self.label_seconds.pack()
 
         # Slider for selecting seconds
-        self.slider_seconds = tk.Scale(master, from_=0, to=59, orient='horizontal', length=300)
+        self.slider_seconds = tk.Scale(master, from_=0, to=59, orient='horizontal', length=300, command=self.update_time_display)
         self.slider_seconds.pack()
 
+        # Label to display selected time
+        self.selected_time_label = tk.Label(master, text="", font=("Helvetica", 24))
+        self.selected_time_label.pack()
+
+        #Frame for buttons
+        self.button_frame = tk.Frame(master)
+        self.button_frame.pack(pady=10)  # Add some vertical padding
+
         self.start_button = tk.Button(master, text="Start", command=self.start_timer)
-        self.start_button.pack()
+        self.start_button.pack(side=tk.LEFT, padx=5)
 
         self.pause_button = tk.Button(master, text="Pause", command=self.pause_timer)
-        self.pause_button.pack()
+        self.pause_button.pack(side=tk.LEFT, padx=5)
 
         self.resume_button = tk.Button(master, text="Resume", command=self.resume_timer)
-        self.resume_button.pack()
+        self.resume_button.pack(side=tk.RIGHT, padx=5)
 
         self.stop_button = tk.Button(master, text="Stop", command=self.stop_timer)
-        self.stop_button.pack()
+        self.stop_button.pack(side=tk.RIGHT, padx=5)
 
         self.timer_label = tk.Label(master, text="", font=("Helvetica", 48))
         self.timer_label.pack()
@@ -53,6 +61,16 @@ class SliderCountdownTimer:
         self.is_running = False
         self.is_paused = False
         self.remaining_time = 0
+        self.should_play_alarm = True  # Flag to control alarm playback
+
+        # Update the time display initially
+        self.update_time_display()
+
+    def update_time_display(self, event=None):
+        hours = self.slider_hours.get()
+        minutes = self.slider_minutes.get()
+        seconds = self.slider_seconds.get()
+        self.selected_time_label.config(text=f"{hours:02d}:{minutes:02d}:{seconds:02d}")
 
     def start_timer(self):
         if self.is_running:
@@ -65,11 +83,12 @@ class SliderCountdownTimer:
         self.remaining_time = hours * 3600 + minutes * 60 + seconds  # Convert to total seconds
 
         if self.remaining_time < 0:
-            self.timer_label.config(text="Negative time not allowed.")
+            self.timer_label.config(text="NEGATIVE TIME NOT ALLOWED")
             return
 
         self.is_running = True
         self.is_paused = False
+        self.should_play_alarm = True  # Reset the alarm flag when starting
         self.countdown()
 
     def countdown(self):
@@ -81,9 +100,10 @@ class SliderCountdownTimer:
             self.remaining_time -= 1
             self.master.after(1000, self.countdown)  # Call countdown every second
         elif self.remaining_time < 0:
-            self.timer_label.config(text="Time's up!")
+            self.timer_label.config(text="TIME'S UP!")
             self.is_running = False
-            self.play_alarm()
+            if self.should_play_alarm:  # Check if the alarm should play
+                self.play_alarm()
 
     def pause_timer(self):
         if self.is_running and not self.is_paused:
@@ -99,6 +119,8 @@ class SliderCountdownTimer:
         self.is_paused = False
         self.remaining_time = 0
         self.timer_label.config(text="")
+        self.should_play_alarm = False  # Prevent the alarm from playing
+        self.stop_alarm()  # Ensure the alarm is stopped if it was playing
 
     def play_alarm(self):
         pygame.mixer.music.play()  # Play the alarm sound
@@ -106,6 +128,7 @@ class SliderCountdownTimer:
 
     def stop_alarm(self):
         pygame.mixer.music.stop()  # Stop the alarm sound
+
 
 if __name__ == "__main__":
     root = tk.Tk()
