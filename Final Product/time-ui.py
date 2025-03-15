@@ -15,6 +15,15 @@ class SliderCountdownTimer:
         # Initialize presets dictionary
         self.presets = {}
 
+        self.title_label = tk.Label(
+            master, 
+            text="STEADYPACE™", 
+            font=("Helvetica", 36, "bold"),  # Large bold font
+            bg="#f0f0f0",
+            fg="blue"  # Blue text color
+        )
+        self.title_label.pack(side=tk.TOP, pady=10)
+
         # Create a frame for the timer display
         self.timer_frame = tk.Frame(master, bg="#ffffff", bd=5, relief=tk.RAISED)
         self.timer_frame.pack(side=tk.RIGHT, padx=20, pady=20)
@@ -72,16 +81,16 @@ class SliderCountdownTimer:
         self.preset_frame.pack(pady=10)
 
         self.preset_listbox = tk.Listbox(self.preset_frame, width=30)
-        self.preset_listbox.pack(side=tk.LEFT)
+        self.preset_listbox.pack(side=tk.BOTTOM)
 
         self.load_button = tk.Button(self.preset_frame, text="Load Preset", command=self.load_preset)
-        self.load_button.pack(side=tk.LEFT, padx=5)
+        self.load_button.pack(side=tk.TOP, padx=5)
 
         self.save_button = tk.Button(self.preset_frame, text="Save Preset", command=self.save_preset)
-        self.save_button.pack(side=tk.LEFT, padx=5)
+        self.save_button.pack(side=tk.TOP, padx=5)
 
         self.delete_button = tk.Button(self.preset_frame, text="Delete Preset", command=self.delete_preset)
-        self.delete_button.pack(side=tk.LEFT, padx=5)
+        self.delete_button.pack(side=tk.TOP, padx=5)
 
         self.is_running = False
         self.is_paused = False
@@ -90,6 +99,15 @@ class SliderCountdownTimer:
 
         # Update the time display initially
         self.update_time_display()
+
+        # Copyright label at the bottom
+        self.copyright_label = tk.Label(
+            master, 
+            text="Copyright © Group 7 Studio, LLC 2025, All rights reserved.", 
+            font=("Helvetica", 10), 
+            bg="#f0f0f0"
+        )
+        self.copyright_label.pack(side=tk.BOTTOM, pady=5)
 
     def update_time_display(self, event=None):
         hours = self.slider_hours.get()
