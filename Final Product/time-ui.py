@@ -103,7 +103,7 @@ class SliderCountdownTimer:
         # Copyright label at the bottom
         self.copyright_label = tk.Label(
             master, 
-            text="Copyright © Group 7 Studio, LLC 2025, All rights reserved.", 
+            text="Copyright © Group 7 Studio LLC 2025, All rights reserved.", 
             font=("Helvetica", 10), 
             bg="#f0f0f0"
         )
